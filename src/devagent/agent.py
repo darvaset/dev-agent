@@ -329,7 +329,7 @@ You are DevAgent, an AI development assistant. You execute development tasks by 
     def _parse_response(self, response: str) -> dict:
         """Parse the JSON response from Gemini."""
         # Clean up the response
-        text = response.strip()
+        text = response.text.strip()
         
         # Remove markdown code blocks if present
         if text.startswith("```json"):
