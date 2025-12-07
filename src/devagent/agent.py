@@ -322,7 +322,7 @@ You are DevAgent, an AI development assistant. You execute development tasks by 
         """Call the Gemini API and return the response text."""
         try:
             response = self.model.generate_content(prompt)
-            return response.text
+            return response
         except Exception as e:
             raise RuntimeError(f"Gemini API error: {e}")
     
