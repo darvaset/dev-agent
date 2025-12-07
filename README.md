@@ -10,6 +10,7 @@ AI-powered development assistant that executes coding tasks using Google's Gemin
 
 - **🔍 Auto-Detection** - Automatically detects your project's tech stack and structure
 - **📚 Knowledge Base** - Built-in coding rules for TypeScript, Python, Next.js, React, Prisma, and more
+- **📖 Enhanced History** - Stores full prompts and Gemini responses for detailed review
 - **🔀 Git Integration** - Auto-creates branches and commits for each task
 - **🎯 Multiple Models** - Support for Gemini 2.5 Pro, Flash, and experimental models
 - **📋 Dry Run** - Preview changes before executing

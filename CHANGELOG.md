@@ -33,10 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.2.0] - 2025-12-07
+
+### Added
+- Enhanced history with full prompt and Gemini API response storage: The system now saves the full original prompt and the complete Gemini API response for each execution into dedicated task directories. The main `history.json` file now stores relative paths to these files, providing a richer historical record.
 
 ### Planned for 0.2.0 (Phase 1)
-- Enhanced history with full prompt/response storage
 - Feedback system (good/bad marking)
 - Project learnings file
 - Detailed history command

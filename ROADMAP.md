@@ -32,8 +32,8 @@ DevAgent es un asistente de desarrollo AI reutilizable que aprende de cada inter
 **Goal:** Guardar historial completo y permitir feedback para aprendizaje futuro.
 
 #### 1.1 Enhanced History Storage
-- [ ] Guardar prompt original completo en `~/.devagent/projects/{project}/prompts/`
-- [ ] Guardar respuesta completa de Gemini en `~/.devagent/projects/{project}/responses/`
+- [x] Guardar prompt original completo en `~/.devagent/projects/{project}/prompts/`
+- [x] Guardar respuesta completa de Gemini en `~/.devagent/projects/{project}/responses/`
 - [ ] Guardar diff de archivos modificados
 - [ ] Registrar tiempo de ejecución y tokens usados
 - [ ] Comando `devagent history --detailed`
