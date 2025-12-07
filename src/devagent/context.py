@@ -15,6 +15,7 @@ import hashlib
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
+import uuid
 
 from devagent.config import GLOBAL_CONFIG_DIR
 
@@ -41,6 +42,14 @@ class ProjectContext:
     def _hash_path(self, path: str) -> str:
         """Create a short hash of the project path for directory naming."""
         return hashlib.md5(path.encode()).hexdigest()[:12]
+    
+    def _get_task_history_dir(self, task_id: str) -> Path:
+        """
+        Returns the path to the task-specific history directory, creating it if it doesn't exist.
+        """
+        task_dir = self.context_dir / "history" / task_id
+        task_dir.mkdir(parents=True, exist_ok=True)
+        return task_dir
     
     def get_context(self) -> dict:
         """
@@ -228,14 +237,34 @@ class ProjectContext:
         except Exception:
             return []
     
-    def add_history_entry(self, prompt_name: str, result: dict):
-        """Add an entry to the task history."""
+    def add_history_entry(
+        self, 
+        prompt_name: str, 
+        result: dict,
+        full_prompt_content: str,
+        full_gemini_response: str
+    ):
+        """Add an entry to the task history, including full prompt and Gemini response."""
         history = self.get_history(limit=100)  # Keep last 100
+        
+        task_id = str(uuid.uuid4())
+        task_history_dir = self._get_task_history_dir(task_id)
+
+        # Save full prompt content
+        prompt_file_path = task_history_dir / "prompt.md"
+        prompt_file_path.write_text(full_prompt_content, encoding="utf-8")
+
+        # Save full Gemini response
+        response_file_path = task_history_dir / "response.json"
+        response_file_path.write_text(full_gemini_response, encoding="utf-8")
         
         entry = {
             "timestamp": datetime.now().isoformat(),
             "prompt_name": prompt_name,
             "status": result.get("status", "unknown"),
+            "task_id": task_id,
+            "full_prompt_path": str(prompt_file_path.relative_to(self.context_dir)),
+            "full_gemini_response_path": str(response_file_path.relative_to(self.context_dir)),
             "files_changed": len(result.get("files_created", [])) + len(result.get("files_modified", [])),
             "git_branch": result.get("git", {}).get("branch"),
             "git_commit": result.get("git", {}).get("commit"),
