@@ -69,7 +69,15 @@ class DevAgent:
             )
         
         genai.configure(api_key=self.config.gemini_api_key)
-        self.model = genai.GenerativeModel(self.model_name)
+        
+        # Configure generation to return JSON
+        self.generation_config = genai.GenerationConfig(
+            response_mime_type="application/json"
+        )
+        self.model = genai.GenerativeModel(
+            self.model_name,
+            generation_config=self.generation_config
+        )
         console.print(f"[dim]Using model: {self.model_name}[/dim]")
     
     def execute(self, prompt_path: Path, extra_rules: list[str] = None) -> dict:
@@ -211,15 +219,22 @@ class DevAgent:
 
 # RESPONSE FORMAT
 
-You MUST respond with a valid JSON object following this exact structure:
+You MUST respond with a valid JSON object. The response will be parsed directly as JSON.
 
-```json
+CRITICAL JSON RULES:
+1. All string content must have proper JSON escaping
+2. Use \\n for newlines inside strings
+3. Use \\\\ for backslashes
+4. Use \\" for quotes inside strings
+5. Do NOT include markdown code blocks - respond with raw JSON only
+
+Structure:
 {{
     "summary": "Brief description of what was done",
     "files_to_create": [
         {{
             "path": "relative/path/to/file.ts",
-            "content": "file content here",
+            "content": "file content with proper escaping for newlines (\\n) and quotes (\\")",
             "description": "why this file was created"
         }}
     ],
@@ -234,14 +249,13 @@ You MUST respond with a valid JSON object following this exact structure:
     "validation_command": "npm run build",
     "commit_message": "feat: description of changes"
 }}
-```
 
 IMPORTANT:
 - For files_to_modify, provide the COMPLETE new content, not a diff
 - All paths are relative to the project root
 - Use appropriate commit message prefixes: feat, fix, refactor, docs, chore
 - validation_command should be a command that verifies the changes work
-- Respond ONLY with the JSON, no markdown code blocks, no explanation before or after
+- Respond ONLY with valid JSON, no explanation before or after
 """
         
         return full_prompt
@@ -323,18 +337,63 @@ You are DevAgent, an AI development assistant. You execute development tasks by 
         
         text = text.strip()
         
+        # Try to parse directly
         try:
             return json.loads(text)
         except json.JSONDecodeError as e:
+            console.print(f"[yellow]Warning: Initial JSON parse failed, attempting repair...[/yellow]")
+            
+            # Try to fix common escape issues
+            try:
+                # Fix invalid escape sequences by escaping backslashes that aren't part of valid escapes
+                fixed_text = self._fix_json_escapes(text)
+                return json.loads(fixed_text)
+            except json.JSONDecodeError:
+                pass
+            
             # Try to extract JSON from the response
             json_match = re.search(r'\{[\s\S]*\}', text)
             if json_match:
                 try:
-                    return json.loads(json_match.group())
+                    extracted = json_match.group()
+                    fixed_extracted = self._fix_json_escapes(extracted)
+                    return json.loads(fixed_extracted)
                 except json.JSONDecodeError:
                     pass
             
             raise ValueError(f"Failed to parse Gemini response as JSON: {e}\nResponse: {text[:500]}")
+    
+    def _fix_json_escapes(self, text: str) -> str:
+        """
+        Fix common JSON escape issues in LLM responses.
+        
+        LLMs often produce invalid escape sequences like \\x, \\p, etc.
+        This method attempts to fix them while preserving valid escapes.
+        """
+        # Valid JSON escape sequences
+        valid_escapes = {'\\n', '\\r', '\\t', '\\b', '\\f', '\\"', '\\\\', '\\/'}
+        
+        result = []
+        i = 0
+        while i < len(text):
+            if text[i] == '\\' and i + 1 < len(text):
+                two_char = text[i:i+2]
+                if two_char in valid_escapes:
+                    result.append(two_char)
+                    i += 2
+                elif text[i+1] == 'u' and i + 5 < len(text):
+                    # Unicode escape \uXXXX
+                    result.append(text[i:i+6])
+                    i += 6
+                else:
+                    # Invalid escape - escape the backslash
+                    result.append('\\\\')
+                    i += 1
+            else:
+                result.append(text[i])
+                i += 1
+        
+        return ''.join(result)
     
     def _execute_file_actions(self, actions: dict) -> dict:
         """Execute the file operations from the parsed response."""
