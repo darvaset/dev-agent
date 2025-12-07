@@ -1,0 +1,18 @@
+# DevAgent Configuration
+# This file is created automatically by 'devagent init'
+# Location: ~/.devagent/config.yaml
+
+# Gemini model to use
+# Options: gemini-1.5-pro (recommended), gemini-1.5-flash (faster), gemini-2.0-flash-exp
+default_model: gemini-1.5-pro
+
+# Enable debug logging
+debug: false
+
+# Git integration
+auto_commit: true      # Automatically commit changes after successful execution
+create_branch: true    # Create a new branch for each task
+
+# Default validation command (optional)
+# If not set, uses the validation_command from the prompt
+# default_validation: npm run build
