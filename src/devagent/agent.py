@@ -148,7 +148,12 @@ class DevAgent:
             # 9. Save to history
             result["status"] = "success"
             result["summary"] = actions.get("summary", "Task completed")
-            self.project_ctx.add_history_entry(prompt_path.name, result)
+            self.project_ctx.add_history_entry(
+                prompt_name=prompt_path.name,
+                result=result,
+                full_prompt_content=enriched_prompt,
+                full_gemini_response=response.text
+            )
             
         except Exception as e:
             result["status"] = "error"
