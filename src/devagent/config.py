@@ -19,12 +19,36 @@ GLOBAL_CONFIG_FILE = GLOBAL_CONFIG_DIR / "config.yaml"
 GLOBAL_ENV_FILE = GLOBAL_CONFIG_DIR / ".env"
 
 
+# Available models mapped by use case
+AVAILABLE_MODELS = {
+    # Best quality (use for complex tasks)
+    "pro": "models/gemini-2.5-pro",
+    "pro-latest": "models/gemini-pro-latest",
+    "gemini-3-pro": "models/gemini-3-pro-preview",
+    
+    # Balanced (default - good quality, reasonable speed)
+    "flash": "models/gemini-2.5-flash",
+    "flash-latest": "models/gemini-flash-latest",
+    
+    # Fast/cheap (use for simple tasks)
+    "flash-lite": "models/gemini-2.5-flash-lite",
+    "flash-lite-latest": "models/gemini-flash-lite-latest",
+    
+    # Experimental
+    "2.0-flash-exp": "models/gemini-2.0-flash-exp",
+    "2.0-pro-exp": "models/gemini-2.0-pro-exp",
+}
+
+# Default model for DevAgent
+DEFAULT_MODEL = "models/gemini-2.5-flash"
+
+
 @dataclass
 class Config:
     """DevAgent configuration."""
     
     gemini_api_key: Optional[str] = None
-    default_model: str = "gemini-1.5-pro"
+    default_model: str = DEFAULT_MODEL
     debug: bool = False
     auto_commit: bool = True
     create_branch: bool = True
@@ -70,6 +94,27 @@ class Config:
                 pass
         
         return config
+    
+    @staticmethod
+    def resolve_model(model_name: str) -> str:
+        """
+        Resolve a model shorthand to the full model path.
+        
+        Examples:
+            "pro" -> "models/gemini-2.5-pro"
+            "flash" -> "models/gemini-2.5-flash"
+            "models/gemini-2.5-pro" -> "models/gemini-2.5-pro" (unchanged)
+        """
+        # If it's already a full path, return as-is
+        if model_name.startswith("models/"):
+            return model_name
+        
+        # Check if it's a shorthand
+        if model_name in AVAILABLE_MODELS:
+            return AVAILABLE_MODELS[model_name]
+        
+        # Try adding models/ prefix
+        return f"models/{model_name}"
     
     def save(self):
         """Save configuration to global config file."""
@@ -117,7 +162,7 @@ def ensure_global_config() -> Path:
     # Create default config file if it doesn't exist
     if not GLOBAL_CONFIG_FILE.exists():
         default_config = {
-            "default_model": "gemini-1.5-pro",
+            "default_model": DEFAULT_MODEL,
             "debug": False,
             "auto_commit": True,
             "create_branch": True,
@@ -125,10 +170,9 @@ def ensure_global_config() -> Path:
         
         with open(GLOBAL_CONFIG_FILE, "w") as f:
             yaml.dump(default_config, f, default_flow_style=False)
-            f.write("\n# Available models:\n")
-            f.write("# - gemini-1.5-pro (recommended)\n")
-            f.write("# - gemini-1.5-flash (faster, cheaper)\n")
-            f.write("# - gemini-2.0-flash-exp (experimental)\n")
+            f.write("\n# Model shortcuts available:\n")
+            for shortcut, full_name in AVAILABLE_MODELS.items():
+                f.write(f"# - {shortcut}: {full_name}\n")
     
     # Create .env template if it doesn't exist
     if not GLOBAL_ENV_FILE.exists():

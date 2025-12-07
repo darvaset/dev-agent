@@ -49,7 +49,10 @@ class DevAgent:
     ):
         self.config = config
         self.use_git = use_git
-        self.model_name = model_override or config.default_model
+        
+        # Resolve model name (handle shortcuts like "pro", "flash")
+        raw_model = model_override or config.default_model
+        self.model_name = Config.resolve_model(raw_model)
         
         self.project_ctx = ProjectContext(Path.cwd())
         self.knowledge = KnowledgeBase()
