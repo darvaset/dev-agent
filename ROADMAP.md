@@ -26,7 +26,23 @@ DevAgent es un asistente de desarrollo AI reutilizable que aprende de cada inter
 
 ---
 
-### Phase 1: Enhanced History & Feedback 🎯 (Next)
+### Phase 1: Usability & Documentation 🚧 (In Progress)
+> Clarify existing features and improve user experience.
+
+**Goal:** Ensure users understand how to use DevAgent effectively, especially regarding API keys and model selection.
+
+- [x] Clarify in `README.md` that `GEMINI_API_KEY` uses AI Studio credits.
+- [x] Improve `README.md` and CLI help text for the `--model` selection option.
+- [ ] Add `devagent status` command to show current configuration (API key status, default model).
+- [ ] Improve error handling and user feedback for common configuration issues.
+
+**Deliverables:**
+- Clearer documentation for core features.
+- An easy way for users to verify their configuration.
+
+---
+
+### Phase 1.5: Enhanced History & Feedback 🎯 (Next)
 > Learn from every execution
 
 **Goal:** Guardar historial completo y permitir feedback para aprendizaje futuro.
@@ -34,9 +50,9 @@ DevAgent es un asistente de desarrollo AI reutilizable que aprende de cada inter
 #### 1.1 Enhanced History Storage
 - [x] Guardar prompt original completo en `~/.devagent/projects/{project}/prompts/`
 - [x] Guardar respuesta completa de Gemini en `~/.devagent/projects/{project}/responses/`
-- [ ] Guardar diff de archivos modificados
 - [ ] Registrar tiempo de ejecución y tokens usados
-- [ ] Comando `devagent history --detailed`
+- [ ] Guardar diff de archivos modificados (Pospuesto)
+- [ ] Comando `devagent history --detailed` (Pospuesto)
 
 #### 1.2 Feedback System
 - [ ] Comando `devagent feedback good` - marcar última ejecución como exitosa
@@ -205,7 +221,8 @@ DevAgent es un asistente de desarrollo AI reutilizable que aprende de cada inter
 | Phase | Duration | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | 1 day | ✅ Complete |
-| Phase 1: History & Feedback | 2-3 days | 🎯 Next |
+| Phase 1: Usability & Doc... | 1 day | 🚧 In Progress |
+| Phase 1.5: History & Feed... | 2-3 days | 🎯 Next |
 | Phase 2: Auto-Learning | 1 week | Planned |
 | Phase 3: Model Intelligence | 1 week | Planned |
 | Phase 4: Advanced Features | 2 weeks | Future |

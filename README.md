@@ -12,7 +12,8 @@ AI-powered development assistant that executes coding tasks using Google's Gemin
 - **📚 Knowledge Base** - Built-in coding rules for TypeScript, Python, Next.js, React, Prisma, and more
 - **📖 Enhanced History** - Stores full prompts and Gemini responses for detailed review
 - **🔀 Git Integration** - Auto-creates branches and commits for each task
-- **🎯 Multiple Models** - Support for Gemini 2.5 Pro, Flash, and experimental models
+- **🎯 Flexible Model Selection** - Full support for Gemini 1.5 Pro, Flash, and any other models available via your API key.
+- **💰 Uses Your AI Studio Credits** - Integrates directly with your Google AI Studio account via your API key.
 - **📋 Dry Run** - Preview changes before executing
 - **👤 Personas** - Customize coding style and preferences
 
@@ -24,7 +25,7 @@ git clone https://github.com/YOUR_USERNAME/dev-agent.git
 cd dev-agent
 pip install -e .
 
-# Initialize (enter your Gemini API key)
+# Initialize (enter your Gemini API key from Google AI Studio)
 devagent init
 
 # Use in any project
@@ -37,14 +38,17 @@ devagent run prompts/your-task.md
 ### Execute a Task
 
 ```bash
-# Run a prompt
+# Run a prompt using the default model
 devagent run prompts/ADD_USER_AUTH.md
 
 # Preview without executing
 devagent run prompts/UPDATE_SCHEMA.md --dry
 
-# Use specific model
-devagent run task.md --model pro
+# Use a specific model (e.g., Gemini 1.5 Pro)
+devagent run task.md --model gemini-1.5-pro
+
+# Use model shortcuts
+devagent run task.md -m pro
 
 # Add extra rules
 devagent run task.md --rules typescript,nextjs
@@ -63,14 +67,28 @@ devagent history          # Show task history
 devagent init             # Initialize/reset configuration
 ```
 
-### Model Shortcuts
+### Model Selection
+
+You can specify a model using shortcuts or the full model name.
 
 | Shortcut | Model | Use Case |
 |----------|-------|----------|
-| `pro` | gemini-2.5-pro | Complex tasks, best quality |
-| `flash` | gemini-2.5-flash | Balanced (default) |
-| `flash-lite` | gemini-2.5-flash-lite | Simple tasks, fast/cheap |
-| `gemini-3-pro` | gemini-3-pro-preview | Experimental |
+| `pro` | `models/gemini-1.5-pro` | Complex tasks, best quality |
+| `pro-latest` | `models/gemini-1.5-pro-latest` | The very latest pro model |
+| `flash` | `models/gemini-1.5-flash` | Balanced (default) |
+| `flash-latest`| `models/gemini-1.5-flash-latest`| The very latest flash model |
+
+You can also use any other model name available to your API key, for example: `devagent run task.md --model models/gemini-pro`.
+
+#### Listing All Available Models
+
+To see all Gemini models available to you via your configured API key, run the following script:
+
+```bash
+python scripts/list_models.py
+```
+
+This script will query the Gemini API and list all models, along with their capabilities, that you can use with DevAgent.
 
 ## 📁 Project Structure
 
@@ -121,15 +139,19 @@ Create a markdown file in `knowledge/rules/`:
 
 ## ⚙️ Configuration
 
-Configuration is stored in `~/.devagent/`:
+Configuration is stored in `~/.devagent/`.
 
+### Model and Behavior (`config.yaml`)
 ```yaml
 # ~/.devagent/config.yaml
-default_model: models/gemini-2.5-flash
+default_model: gemini-1.5-flash
 debug: false
 auto_commit: true
 create_branch: true
 ```
+
+### API Key (`.env`)
+The agent uses the `GEMINI_API_KEY` to access Google's models. This is how it uses your credits from your Google AI Studio account.
 
 ```bash
 # ~/.devagent/.env
@@ -170,9 +192,8 @@ Run: npm run build
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 **Next up (Phase 1):**
-- Enhanced history with full prompt/response storage
-- Feedback system for learning
-- Project-specific learnings
+- Clarify documentation and improve usability.
+- Add a `devagent status` command for configuration verification.
 
 ## 📄 License
 

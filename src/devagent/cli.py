@@ -49,7 +49,7 @@ def main():
 @click.option("--dry", "-d", is_flag=True, help="Dry run - preview without executing")
 @click.option("--rules", "-r", multiple=True, help="Additional rules to include")
 @click.option("--no-git", is_flag=True, help="Skip git operations")
-@click.option("--model", "-m", default=None, help="Override Gemini model")
+@click.option("--model", "-m", default=None, help="Specify the Gemini model to use (e.g., 'gemini-1.5-pro', 'flash'). Overrides the default.")
 def run(prompt_file: str, dry: bool, rules: tuple, no_git: bool, model: str):
     """
     Execute a prompt file.

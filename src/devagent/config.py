@@ -23,20 +23,12 @@ GLOBAL_ENV_FILE = GLOBAL_CONFIG_DIR / ".env"
 AVAILABLE_MODELS = {
     # Best quality (use for complex tasks)
     "pro": "models/gemini-2.5-pro",
-    "pro-latest": "models/gemini-pro-latest",
-    "gemini-3-pro": "models/gemini-3-pro-preview",
     
     # Balanced (default - good quality, reasonable speed)
     "flash": "models/gemini-2.5-flash",
-    "flash-latest": "models/gemini-flash-latest",
-    
-    # Fast/cheap (use for simple tasks)
-    "flash-lite": "models/gemini-2.5-flash-lite",
-    "flash-lite-latest": "models/gemini-flash-lite-latest",
     
     # Experimental
-    "2.0-flash-exp": "models/gemini-2.0-flash-exp",
-    "2.0-pro-exp": "models/gemini-2.0-pro-exp",
+    "gemini-3-pro": "models/gemini-3-pro-preview",
 }
 
 # Default model for DevAgent
