@@ -235,6 +235,30 @@ def history(limit: int):
         sys.exit(1)
 
 
+@main.command()
+def status():
+    """Display current configuration status."""
+    try:
+        config = Config.load()
+        
+        api_key_status = "✅ Configured" if config.gemini_api_key else "❌ Not Found"
+        
+        table = Table(show_header=False, box=None, padding=(0, 2))
+        table.add_row("[bold]Config Directory[/]:", str(config.config_dir))
+        table.add_row("[bold]API Key Status[/]:", api_key_status)
+        table.add_row("[bold]Default Model[/]:", config.default_model)
+        
+        console.print(Panel(
+            table,
+            title="⚙️ DevAgent Status",
+            border_style="yellow"
+        ))
+            
+    except Exception as e:
+        console.print(f"[red]❌ Error:[/red] {e}")
+        sys.exit(1)
+
+
 def _display_result(result: dict):
     """Display the execution result in a nice format."""
     
