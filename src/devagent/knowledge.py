@@ -15,7 +15,7 @@ import re
 
 
 # Knowledge base is stored alongside the package
-KNOWLEDGE_DIR = Path(__file__).parent.parent.parent.parent / "knowledge"
+KNOWLEDGE_DIR = Path(__file__).parent.parent.parent / "knowledge"
 
 
 class KnowledgeBase:
